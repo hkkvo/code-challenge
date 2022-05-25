@@ -5,16 +5,52 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import CommonLayout from "../components/layouts/common-layout";
 import { Page } from "../types/page";
-import axios from "axios";
+import axios, { CancelToken } from "axios";
 import { ICountry } from "../types/component";
-import { Grid } from "@mui/material";
+import { Grid, TextField } from "@mui/material";
 import CountriesListCard from "../components/countries/country-list";
+import { TextFields, TextFieldsOutlined } from "@mui/icons-material";
+import { CountryUtil } from "../util/dto/country.dto";
 const Home: Page = (props) => {
   const [listOfCountries, setListOfCountries] = useState<ICountry[]>([]);
+  let cancelToken: any;
+
+  const handleOnChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const searchTerm = e.target.value;
+    //Check if there are any previous pending requests
+    if (typeof cancelToken != typeof undefined) {
+      cancelToken.cancel("Operation canceled due to new request.");
+    }
+
+    //Save the cancel token for the current request
+    cancelToken = axios.CancelToken.source();
+
+    try {
+      const listOfCountriesResponse = await axios.get(
+        `https://restcountries.com/v3.1/name/${searchTerm}`,
+        { cancelToken: cancelToken.token } //Pass the cancel token to the current request
+      );
+
+      const listOfCountries = listOfCountriesResponse.data;
+
+      const countries: ICountry[] =
+        CountryUtil.getTransformedCountryArrayt(listOfCountries);
+
+      setListOfCountries(countries);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleOnFocus = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.value === "") {
+      console.log(e.target.name);
+    }
+  };
 
   useEffect(() => {
     setListOfCountries(props.countries);
-  }, [listOfCountries]);
+  }, []);
 
   return (
     <Grid
@@ -22,10 +58,21 @@ const Home: Page = (props) => {
       alignItems="center"
       justifyContent="center"
       container
-      gap={10}
+      gap={12}
     >
+      <Grid item xs={10}>
+        <TextField
+          id="outlined-basic"
+          type="text"
+          name="search"
+          variant="outlined"
+          onChange={handleOnChange}
+          onFocus={handleOnFocus}
+        />
+      </Grid>
+
       {listOfCountries.map((country: ICountry, index: number) => (
-        <Grid item>
+        <Grid item xs={12} sm={3} md={2}>
           <CountriesListCard country={country} />
         </Grid>
       ))}
@@ -46,25 +93,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const listOfCountries = await listOfCountriesResponse.data;
 
-  let countries: ICountry[] = [];
-
-  listOfCountries.forEach((country) => {
-    const individualCountry: ICountry = {};
-
-    individualCountry.name = country?.name?.official ?? "";
-    individualCountry.nativeName = country?.name?.common ?? "";
-    individualCountry.borderCountries = country?.borders ?? "";
-    individualCountry.flags = country?.flags ?? "";
-    individualCountry.currencies = country?.currencies ?? "";
-    individualCountry.languages = country?.languages ?? "";
-    individualCountry.capital = country?.capital ?? "";
-    individualCountry.population = country?.population ?? "";
-    individualCountry.region = country?.region ?? "";
-    individualCountry.subRegion = country?.subregion ?? "";
-    individualCountry.topLevelDomain = country?.capital ?? "";
-    countries.push(individualCountry);
-  });
-
+  let countries: ICountry[] =
+    CountryUtil.getTransformedCountryArrayt(listOfCountries);
   return {
     props: { countries },
   };

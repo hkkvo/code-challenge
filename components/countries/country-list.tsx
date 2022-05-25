@@ -1,4 +1,5 @@
 import { Box, Grid, Paper, Typography } from "@mui/material";
+import { height, minHeight } from "@mui/system";
 import Image from "next/image";
 import React, { FC } from "react";
 import { ICountry } from "../../types/component";
@@ -13,10 +14,10 @@ const CountriesListCard: FC<ICountriesListCard> = ({
   const { name, population, region, capital, flags } = country;
 
   return (
-    <Paper sx={{ maxWidth: 300 }}>
+    <Paper sx={{ width: "320px", maxWidth: 320 }}>
       <Box
         style={{
-          width: "300px",
+          width: "320px",
           borderTopLeftRadius: 5,
           borderTopRightRadius: 5,
           paddingTop: "1px",
@@ -29,16 +30,26 @@ const CountriesListCard: FC<ICountriesListCard> = ({
             src={flags["svg"]}
             objectFit="cover"
             layout="fixed"
-            width={300}
+            width={320}
             height={200}
           />
         ) : (
           ""
         )}
       </Box>
-      <Box sx={{ paddingLeft: 5, paddingBottom: "16px" }}>
-        <Grid container>
-          <Grid item sx={{ width: 1, marginTop: "16px", fontWeight: 700 }}>
+      <Box
+        sx={{
+          paddingLeft: 5,
+          paddingRigth: 5,
+          paddingBottom: "16px",
+          minHeight: "180px",
+        }}
+      >
+        <Grid container flexShrink={1}>
+          <Grid
+            item
+            sx={{ paddingRigth: 5, marginTop: "16px", fontWeight: 700 }}
+          >
             <Typography>{name}</Typography>
           </Grid>
           <Grid item sx={{ width: 1, marginTop: "16px" }}>

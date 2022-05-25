@@ -26,7 +26,7 @@ const EmptyLayout: React.FC<ILayoutProps> = ({ children }) => (
 );
 
 export default function MyApp(props: Props) {
-  const [mode, setMode] = React.useState<PaletteMode>("light");
+  const [mode, setMode] = React.useState<PaletteMode>("dark");
   const colorMode = React.useMemo(
     () => ({
       // The dark mode switch would invoke this method
