@@ -18,7 +18,7 @@ export const getDesignTokens = (mode: PaletteMode) => ({
             paper: `hsl(0, 0%, 100%)`,
           },
           text: {
-            primary: grey[900],
+            primary: `hsl(200, 15%, 8%)`,
             secondary: grey[800],
           },
         }

@@ -8,7 +8,7 @@ import theme, { getDesignTokens } from "../src/theme";
 import createEmotionCache from "../src/createEmotionCache";
 import { createTheme, PaletteMode } from "@mui/material";
 import { Page } from "../types/page";
-import { ICommonLayoutProps } from "../types/component";
+import { ILayoutProps } from "../types/component";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -21,7 +21,7 @@ type Props = MyAppProps & {
   Component: Page;
 };
 
-const EmptyLayout: React.FC<ICommonLayoutProps> = ({ children }) => (
+const EmptyLayout: React.FC<ILayoutProps> = ({ children }) => (
   <React.Fragment>{children}</React.Fragment>
 );
 
@@ -44,8 +44,6 @@ export default function MyApp(props: Props) {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
 
   const Layout = Component.layout ? Component.layout : EmptyLayout;
-
-  console.log(Component.layout);
 
   return (
     <CacheProvider value={emotionCache}>
