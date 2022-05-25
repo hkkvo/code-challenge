@@ -1,8 +1,10 @@
 import { Box, Grid, Paper, Typography } from "@mui/material";
 import { height, minHeight } from "@mui/system";
 import Image from "next/image";
+import Link from "next/link";
 import React, { FC } from "react";
 import { ICountry } from "../../types/component";
+import { useRouter } from "next/router";
 
 interface ICountriesListCard {
   country: ICountry;
@@ -12,12 +14,18 @@ const CountriesListCard: FC<ICountriesListCard> = ({
   country,
 }: ICountriesListCard) => {
   const { name, population, region, capital, flags } = country;
+  const router = useRouter();
+
+  const handleOnclick = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    router.push(`/countries/${name}`);
+  };
 
   return (
-    <Paper sx={{ width: "320px", maxWidth: 320 }}>
+    <Paper sx={{ width: "310px", maxWidth: 310 }} onClick={handleOnclick}>
       <Box
         style={{
-          width: "320px",
+          width: "310",
           borderTopLeftRadius: 5,
           borderTopRightRadius: 5,
           paddingTop: "1px",
@@ -30,7 +38,7 @@ const CountriesListCard: FC<ICountriesListCard> = ({
             src={flags["svg"]}
             objectFit="cover"
             layout="fixed"
-            width={320}
+            width={310}
             height={200}
           />
         ) : (
@@ -43,6 +51,7 @@ const CountriesListCard: FC<ICountriesListCard> = ({
           paddingRigth: 5,
           paddingBottom: "16px",
           minHeight: "180px",
+          "&:hover": { cursor: "pointer" },
         }}
       >
         <Grid container flexShrink={1}>

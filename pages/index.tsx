@@ -7,12 +7,20 @@ import CommonLayout from "../components/layouts/common-layout";
 import { Page } from "../types/page";
 import axios, { CancelToken } from "axios";
 import { ICountry } from "../types/component";
-import { Grid, TextField } from "@mui/material";
+import {
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+} from "@mui/material";
 import CountriesListCard from "../components/countries/country-list";
 import { TextFields, TextFieldsOutlined } from "@mui/icons-material";
 import { CountryUtil } from "../util/dto/country.dto";
 const Home: Page = (props) => {
   const [listOfCountries, setListOfCountries] = useState<ICountry[]>([]);
+  const [region, setRegion] = useState<string>("");
   let cancelToken: any;
 
   const handleOnChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -25,9 +33,13 @@ const Home: Page = (props) => {
     //Save the cancel token for the current request
     cancelToken = axios.CancelToken.source();
 
+    const url =
+      searchTerm === ""
+        ? "https://restcountries.com/v3.1/all"
+        : `https://restcountries.com/v3.1/name/${searchTerm}`;
     try {
       const listOfCountriesResponse = await axios.get(
-        `https://restcountries.com/v3.1/name/${searchTerm}`,
+        url,
         { cancelToken: cancelToken.token } //Pass the cancel token to the current request
       );
 
@@ -42,9 +54,19 @@ const Home: Page = (props) => {
     }
   };
 
-  const handleOnFocus = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.value === "") {
-      console.log(e.target.name);
+  const handleSelectChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const searchTerm = e.target.value;
+
+    const url = `https://restcountries.com/v3.1/region/${searchTerm}`;
+    try {
+      const listOfCountriesResponse = await axios.get(url);
+      const listOfCountries = listOfCountriesResponse.data;
+      const countries: ICountry[] =
+        CountryUtil.getTransformedCountryArrayt(listOfCountries);
+
+      setListOfCountries(countries);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -53,26 +75,39 @@ const Home: Page = (props) => {
   }, []);
 
   return (
-    <Grid
-      justifyItems="center"
-      alignItems="center"
-      justifyContent="center"
-      container
-      gap={12}
-    >
-      <Grid item xs={10}>
-        <TextField
-          id="outlined-basic"
-          type="text"
-          name="search"
-          variant="outlined"
-          onChange={handleOnChange}
-          onFocus={handleOnFocus}
-        />
+    <Grid alignItems="center" justifyContent="center" container gap={12}>
+      <Grid item xs={10} container>
+        <Grid item xs={5} sm={3}>
+          <TextField
+            id="outlined-basic"
+            type="text"
+            name="search"
+            variant="outlined"
+            onChange={handleOnChange}
+            placeholder="Search by Country"
+          />
+        </Grid>
+        <Grid item xs></Grid>
+        <Grid item xs={5} sm={2}>
+          <FormControl fullWidth>
+            <Select
+              value={region}
+              placeholder="Filter by Region"
+              onChange={handleSelectChange}
+              defaultValue="Filter by Region"
+            >
+              <MenuItem value="africa">Africa</MenuItem>
+              <MenuItem value="america">America</MenuItem>
+              <MenuItem value="asia">Asia</MenuItem>
+              <MenuItem value="europe">Europe</MenuItem>
+              <MenuItem value="oceania">Oceania</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
       </Grid>
 
       {listOfCountries.map((country: ICountry, index: number) => (
-        <Grid item xs={12} sm={3} md={2}>
+        <Grid item xs={10} sm={3} md={2}>
           <CountriesListCard country={country} />
         </Grid>
       ))}
