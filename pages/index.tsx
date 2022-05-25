@@ -18,6 +18,7 @@ import {
 import CountriesListCard from "../components/countries/country-list";
 import { TextFields, TextFieldsOutlined } from "@mui/icons-material";
 import { CountryUtil } from "../util/dto/country.dto";
+import client from "../util/data/index";
 const Home: Page = (props) => {
   const [listOfCountries, setListOfCountries] = useState<ICountry[]>([]);
   const [region, setRegion] = useState<string>("");
@@ -77,7 +78,7 @@ const Home: Page = (props) => {
   return (
     <Grid alignItems="center" justifyContent="center" container gap={12}>
       <Grid item xs={10} container>
-        <Grid item xs={5} sm={3}>
+        <Grid item xs={12} sm={3}>
           <TextField
             id="outlined-basic"
             type="text"
@@ -85,16 +86,18 @@ const Home: Page = (props) => {
             variant="outlined"
             onChange={handleOnChange}
             placeholder="Search by Country"
+            fullWidth
           />
         </Grid>
         <Grid item xs></Grid>
-        <Grid item xs={5} sm={2}>
+        <Grid item xs={12} sm={3}>
           <FormControl fullWidth>
+            <InputLabel id="simple-select">Select by Region</InputLabel>
             <Select
+              label="Age"
+              id="simple-select"
               value={region}
-              placeholder="Filter by Region"
               onChange={handleSelectChange}
-              defaultValue="Filter by Region"
             >
               <MenuItem value="africa">Africa</MenuItem>
               <MenuItem value="america">America</MenuItem>
@@ -122,11 +125,7 @@ export default Home;
 export const getServerSideProps: GetServerSideProps = async (context) => {
   // ...
 
-  const listOfCountriesResponse = await axios.get(
-    "https://restcountries.com/v3.1/all"
-  );
-
-  const listOfCountries = await listOfCountriesResponse.data;
+  const listOfCountries = await client.countries.all();
 
   let countries: ICountry[] =
     CountryUtil.getTransformedCountryArrayt(listOfCountries);

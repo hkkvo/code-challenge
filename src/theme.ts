@@ -24,8 +24,9 @@ export const getDesignTokens = (mode: PaletteMode) => ({
         }
       : {
           // palette values for dark mode
-          primary: deepOrange,
-          divider: deepOrange[700],
+          primary: {
+            main: `hsl(209, 23%, 22%)`,
+          },
           background: {
             default: `hsl(207, 26%, 17%)`,
             paper: `hsl(209, 23%, 22%)`,
